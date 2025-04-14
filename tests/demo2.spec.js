@@ -1,0 +1,37 @@
+const { test, expect } = require('@playwright/test')
+
+test('Login Fail', async ({ page }) => { //VALIDAMOS EL FAIL DE UN LOGIN
+    await page.goto('https://www.saucedemo.com/')
+    await page.locator('[data-test="username"]').click()
+    await page.locator('[data-test="username"]').fill('test')
+    await page.locator('[data-test="password"]').click()
+    await page.locator('[data-test="password"]').fill('test')
+    await page.locator('[data-test="login-button"]').click()
+    await expect(page.locator('[data-test="error"]')).toBeVisible() //Validamos que el elemento aparezca.
+    await expect(page.locator('[data-test="error"]')).toContainText('Epic sadface: Username and password do not match any user in this service')
+})
+test('Item Details', async ({ page }) => { //VALIDAMOS QUE AL DAR CLICK A UN ARTICULO SE MUESTREN LOS DETALLES DEL MISMO
+    await page.goto('https://www.saucedemo.com/')
+    await page.locator('[data-test="username"]').click()
+    await page.locator('[data-test="username"]').fill('standard_user')
+    await page.locator('[data-test="password"]').click()
+    await page.locator('[data-test="password"]').fill('secret_sauce')
+    await page.locator('[data-test="login-button"]').click()
+    await page.locator('[data-test="item-4-title-link"]').click()
+    await expect(page.locator('[data-test="inventory-item-name"]')).toContainText('Sauce Labs Backpack')
+})
+
+test('Add 3 items to cart', async ({ page }) => { //VALIDAMOS QUE SE PUEDAN AGREGAR 3 ARTICULOS AL CARRITO Y QUE EL NUMERO DEL CARRITO INCREMENTE EN EL ORDEN QUE ESTOS SE AGREGAN
+    await page.goto('https://www.saucedemo.com/')
+    await page.locator('[data-test="username"]').click()
+    await page.locator('[data-test="username"]').fill('standard_user')
+    await page.locator('[data-test="password"]').click()
+    await page.locator('[data-test="password"]').fill('secret_sauce')
+    await page.locator('[data-test="login-button"]').click()
+    await page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click()
+    await expect(page.locator('[data-test="shopping-cart-badge"]')).toMatchAriaSnapshot(`- text: "1"`)
+    await page.locator('[data-test="add-to-cart-sauce-labs-bike-light"]').click()
+    await expect(page.locator('[data-test="shopping-cart-badge"]')).toMatchAriaSnapshot(`- text: "2"`)
+    await page.locator('[data-test="add-to-cart-sauce-labs-bolt-t-shirt"]').click()
+    await expect(page.locator('[data-test="shopping-cart-badge"]')).toMatchAriaSnapshot(`- text: "3"`)
+})
